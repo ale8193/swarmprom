@@ -15,6 +15,18 @@ configs:
     file: ./prometheus/rules/swarm_node.rules.yml
   task_rules:
     file: ./prometheus/rules/swarm_task.rules.yml
+  grafana_datasources:
+    file: ./grafana/datasources
+  grafana_dashboards:
+    file: ./grafana/dashboards
+  grafana_swarmprom_dashboards:
+    file: ./grafana/swarmprom_dashboards.yml
+  alertmanager:
+    file: ./alertmanager/conf/alertmanager.yml
+  node_exporter:
+    file: ./node-exporter/conf/docker-entrypoint.sh
+  prometheus:
+    file: ./prometheus/conf
 
 services:
   cadvisor:
@@ -37,7 +49,7 @@ services:
           memory: 64M
 
   grafana:
-    image: stefanprodan/swarmprom-grafana:5.3.4
+    image: grafana/grafana:latest
     ports:
       - "3000:3000"
     networks:
@@ -46,15 +58,15 @@ services:
       - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-f0rzar0ma}
       - GF_USERS_ALLOW_SIGN_UP=false
-      #- GF_SERVER_ROOT_URL=${GF_SERVER_ROOT_URL:-localhost}
-      #- GF_SMTP_ENABLED=${GF_SMTP_ENABLED:-false}
-      #- GF_SMTP_FROM_ADDRESS=${GF_SMTP_FROM_ADDRESS:-grafana@test.com}
-      #- GF_SMTP_FROM_NAME=${GF_SMTP_FROM_NAME:-Grafana}
-      #- GF_SMTP_HOST=${GF_SMTP_HOST:-smtp:25}
-      #- GF_SMTP_USER=${GF_SMTP_USER}
-      #- GF_SMTP_PASSWORD=${GF_SMTP_PASSWORD}
     volumes:
       - grafana:/var/lib/grafana
+    configs:
+      - source: grafana_datasources
+        target: /etc/grafana/provisioning/datasources/
+      - source: grafana_dashboards
+        target: /etc/grafana/dashboards/
+      - source: grafana_swarmprom_dashboards
+        target: /etc/grafana/provisioning/dashboards/
     deploy:
       mode: replicated
       replicas: 3
@@ -68,15 +80,18 @@ services:
           memory: 64M
 
   alertmanager:
-    image: stefanprodan/swarmprom-alertmanager:v0.14.0
+    image: prom/alertmanager:latest
     ports:
       - "9093:9093"
     networks:
       - net
-    environment:
+    # environment:
     #  - SLACK_URL=${SLACK_URL:-https://hooks.slack.com/services/TOKEN}
     #  - SLACK_CHANNEL=${SLACK_CHANNEL:-general}
     #  - SLACK_USER=${SLACK_USER:-alertmanager}
+    configs:
+      - source: alertmanager
+        target: /etc/alertmanager/config.yml
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
       - '--storage.path=/alertmanager'
@@ -136,7 +151,7 @@ services:
           memory: 64M
 
   node-exporter:
-    image: stefanprodan/swarmprom-node-exporter:v0.16.0
+    image: prom/node-exporter:latest
     networks:
       - net
     environment:
@@ -146,6 +161,10 @@ services:
       - /sys:/host/sys:ro
       - /:/rootfs:ro
       - /etc/hostname:/etc/nodename
+    configs:
+      - source: node_exporter
+        target: /etc/node-exporter/docker-entrypoint.sh
+    entrypoint: /etc/node-exporter/docker-entrypoint.sh
     command:
       - '--path.sysfs=/host/sys'
       - '--path.procfs=/host/proc'
@@ -161,7 +180,7 @@ services:
           memory: 64M
 
   prometheus:
-    image: stefanprodan/swarmprom-prometheus:v2.5.0
+    image: prom/prometheus:latest
     ports:
      - "9090:9090"
     networks:
@@ -177,6 +196,9 @@ services:
         target: /etc/prometheus/swarm_node.rules.yml
       - source: task_rules
         target: /etc/prometheus/swarm_task.rules.yml
+      - source: prometheus
+        target: /etc/prometheus/
+    entrypoint: /etc/prometheus/docker-entrypoint.sh
     deploy:
       mode: replicated
       replicas: 3
