@@ -176,6 +176,7 @@ services:
         target: /etc/node-exporter/docker-entrypoint.sh
     entrypoint: /etc/node-exporter/docker-entrypoint.sh
     command:
+      - '/bin/node_exporter'
       - '--path.sysfs=/host/sys'
       - '--path.procfs=/host/proc'
       - '--collector.textfile.directory=/etc/node-exporter/'
