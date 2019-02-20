@@ -16,17 +16,23 @@ configs:
   task_rules:
     file: ./prometheus/rules/swarm_task.rules.yml
   grafana_datasources:
-    file: ./grafana/datasources
-  grafana_dashboards:
-    file: ./grafana/dashboards
+    file: ./grafana/datasources/prometheus.yaml
+  grafana_dashboards_nodes:
+    file: ./grafana/dashboards/swarmprom-nodes-dash.json
+  grafana_dashboards_prom:
+    file: ./grafana/dashboards/swarmprom-prometheus-dash.json
+  grafana_dashboards_services:
+    file: ./grafana/dashboards/swarmprom-services-dash.json
   grafana_swarmprom_dashboards:
     file: ./grafana/swarmprom_dashboards.yml
   alertmanager:
     file: ./alertmanager/conf/alertmanager.yml
   node_exporter:
     file: ./node-exporter/conf/docker-entrypoint.sh
-  prometheus:
-    file: ./prometheus/conf
+  prometheus_conf:
+    file: ./prometheus/conf/prometheus.yml
+  prometheus_entrypoint:
+    file: ./prometheus/conf/docker-entrypoint.sh
 
 services:
   cadvisor:
@@ -62,11 +68,15 @@ services:
       - grafana:/var/lib/grafana
     configs:
       - source: grafana_datasources
-        target: /etc/grafana/provisioning/datasources/
-      - source: grafana_dashboards
-        target: /etc/grafana/dashboards/
+        target: /etc/grafana/provisioning/datasources/prometheus.yaml
+      - source: grafana_dashboards_nodes
+        target: /etc/grafana/dashboards/swarmprom-nodes-dash.json
+      - source: grafana_dashboards_prom
+        target: /etc/grafana/dashboards/swarmprom-prometheus-dash.json
+      - source: grafana_dashboards_services
+        target: /etc/grafana/dashboards/swarmprom-services-dash.json
       - source: grafana_swarmprom_dashboards
-        target: /etc/grafana/provisioning/dashboards/
+        target: /etc/grafana/provisioning/dashboards/swarmprom_dashboards.yml
     deploy:
       mode: replicated
       replicas: 3
@@ -196,8 +206,10 @@ services:
         target: /etc/prometheus/swarm_node.rules.yml
       - source: task_rules
         target: /etc/prometheus/swarm_task.rules.yml
-      - source: prometheus
-        target: /etc/prometheus/
+      - source: prometheus_conf
+        target: /etc/prometheus/prometheus.yml
+      - source: prometheus_entrypoint
+        target: /etc/prometheus/docker-entrypoint.sh
     entrypoint: /etc/prometheus/docker-entrypoint.sh
     deploy:
       mode: replicated
