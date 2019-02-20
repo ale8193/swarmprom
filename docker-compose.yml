@@ -79,18 +79,12 @@ services:
       - "9093:9093"
     networks:
       - net
-    # environment:
-    #  - SLACK_URL=${SLACK_URL:-https://hooks.slack.com/services/TOKEN}
-    #  - SLACK_CHANNEL=${SLACK_CHANNEL:-general}
-    #  - SLACK_USER=${SLACK_USER:-alertmanager}
-    configs:
-      - source: alertmanager
-        target: /etc/alertmanager/config.yml
     command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--config.file=/etc/alertmanager/conf/alertmanager.yml'
       - '--storage.path=/alertmanager'
     volumes:
       - alertmanager:/alertmanager
+      - ./alertmanager/conf:/etc/alertmanager/conf
     deploy:
       mode: replicated
       replicas: 3
