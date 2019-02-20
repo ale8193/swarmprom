@@ -164,19 +164,19 @@ services:
     image: prom/node-exporter:latest
     networks:
       - net
-    environment:
-      - NODE_ID={{.Node.ID}}
+    # environment:
+    #  - NODE_ID={{.Node.ID}}
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
-      - /etc/hostname:/etc/nodename
-    configs:
-      - source: node_exporter
-        target: /etc/node-exporter/docker-entrypoint.sh
-    entrypoint: /etc/node-exporter/docker-entrypoint.sh
+    #  - /etc/hostname:/etc/nodename
+    # configs:
+    #  - source: node_exporter
+    #    target: /etc/node-exporter/docker-entrypoint.sh
+    # entrypoint: /etc/node-exporter/docker-entrypoint.sh
     command:
-      - '/bin/node_exporter'
+    #  - '/bin/node_exporter'
       - '--path.sysfs=/host/sys'
       - '--path.procfs=/host/proc'
       - '--collector.textfile.directory=/etc/node-exporter/'
