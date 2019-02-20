@@ -15,16 +15,6 @@ configs:
     file: ./prometheus/rules/swarm_node.rules.yml
   task_rules:
     file: ./prometheus/rules/swarm_task.rules.yml
-  grafana_datasources:
-    file: ./grafana/datasources/prometheus.yaml
-  grafana_dashboards_nodes:
-    file: ./grafana/dashboards/swarmprom-nodes-dash.json
-  grafana_dashboards_prom:
-    file: ./grafana/dashboards/swarmprom-prometheus-dash.json
-  grafana_dashboards_services:
-    file: ./grafana/dashboards/swarmprom-services-dash.json
-  grafana_swarmprom_dashboards:
-    file: ./grafana/swarmprom_dashboards.yml
   alertmanager:
     file: ./alertmanager/conf/alertmanager.yml
   node_exporter:
@@ -66,17 +56,11 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - grafana:/var/lib/grafana
-    configs:
-      - source: grafana_datasources
-        target: /etc/grafana/provisioning/datasources/prometheus.yaml
-      - source: grafana_dashboards_nodes
-        target: /etc/grafana/dashboards/swarmprom-nodes-dash.json
-      - source: grafana_dashboards_prom
-        target: /etc/grafana/dashboards/swarmprom-prometheus-dash.json
-      - source: grafana_dashboards_services
-        target: /etc/grafana/dashboards/swarmprom-services-dash.json
-      - source: grafana_swarmprom_dashboards
-        target: /etc/grafana/provisioning/dashboards/swarmprom_dashboards.yml
+      - ./grafana/dashboards:/etc/grafana/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/swarmprom_dashboards.yml:/etc/grafana/provisioning/dashboards/swarmprom_dashboards.yml
+      - ./grafana/entrypoint.sh:/etc/grafana/entrypoint.sh
+    entrypoint: /etc/grafana/entrypoint.sh
     deploy:
       mode: replicated
       replicas: 3
