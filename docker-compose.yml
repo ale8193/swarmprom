@@ -180,7 +180,6 @@ services:
     volumes:
       - prometheus:/prometheus
       - ./prometheus/conf:/etc/prometheus
-      - ./prometheus/rules:/etc/prometheus
       #- source: prometheus_entrypoint
       #  target: /etc/prometheus/docker-entrypoint.sh
     # entrypoint: /etc/prometheus/docker-entrypoint.sh
