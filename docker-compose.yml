@@ -15,10 +15,6 @@ configs:
     file: ./prometheus/rules/swarm_node.rules.yml
   task_rules:
     file: ./prometheus/rules/swarm_task.rules.yml
-  alertmanager:
-    file: ./alertmanager/conf/alertmanager.yml
-  node_exporter:
-    file: ./node-exporter/conf/docker-entrypoint.sh
   prometheus_conf:
     file: ./prometheus/conf/prometheus.yml
   prometheus_entrypoint:
@@ -27,15 +23,18 @@ configs:
 services:
   cadvisor:
     image: google/cadvisor
+    ports:
+      - "8080:8080"
     networks:
       - net
     command: -logtostderr -docker_only
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/rootfs:ro
-      - /var/run:/var/run
+      - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
     deploy:
       mode: global
       resources:
@@ -180,13 +179,8 @@ services:
       - '--storage.tsdb.retention=24h'
     volumes:
       - prometheus:/prometheus
-    configs:
-      - source: node_rules
-        target: /etc/prometheus/swarm_node.rules.yml
-      - source: task_rules
-        target: /etc/prometheus/swarm_task.rules.yml
-      - source: prometheus_conf
-        target: /etc/prometheus/prometheus.yml
+      - ./prometheus/conf:/etc/prometheus
+      - ./prometheus/rules:/etc/prometheus
       #- source: prometheus_entrypoint
       #  target: /etc/prometheus/docker-entrypoint.sh
     # entrypoint: /etc/prometheus/docker-entrypoint.sh
