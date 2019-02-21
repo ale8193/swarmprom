@@ -10,16 +10,6 @@ volumes:
     grafana: {}
     alertmanager: {}
 
-configs:
-  node_rules:
-    file: ./prometheus/rules/swarm_node.rules.yml
-  task_rules:
-    file: ./prometheus/rules/swarm_task.rules.yml
-  prometheus_conf:
-    file: ./prometheus/conf/prometheus.yml
-  prometheus_entrypoint:
-    file: ./prometheus/conf/docker-entrypoint.sh
-
 services:
   cadvisor:
     image: google/cadvisor
