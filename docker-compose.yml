@@ -34,7 +34,7 @@ services:
           memory: 64M
 
   grafana:
-    image: grafana/grafana:latest
+    image: ale8193/grafana:latest
     ports:
       - "3000:3000"
     networks:
@@ -128,7 +128,7 @@ services:
           memory: 64M
 
   node-exporter:
-    image: prom/node-exporter:latest
+    image: ale8193/node-exporter:latest
     networks:
       - net
     environment:
