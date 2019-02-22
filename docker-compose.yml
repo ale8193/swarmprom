@@ -39,17 +39,17 @@ services:
       - "3000:3000"
     networks:
       - net
+    env_file:
+      - ./grafana/.env
     environment:
-      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-f0rzar0ma}
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - grafana:/var/lib/grafana
       - ./grafana/dashboards:/etc/grafana/dashboards
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/swarmprom_dashboards.yml:/etc/grafana/provisioning/dashboards/swarmprom_dashboards.yml
-    #  - ./grafana/entrypoint.sh:/etc/grafana/entrypoint.sh
-    # entrypoint: /etc/grafana/entrypoint.sh
     deploy:
       mode: replicated
       replicas: 3
@@ -131,19 +131,14 @@ services:
     image: prom/node-exporter:latest
     networks:
       - net
-    # environment:
-    #  - NODE_ID={{.Node.ID}}
+    environment:
+      - NODE_ID={{.Node.ID}}
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
     #  - /etc/hostname:/etc/nodename
-    # configs:
-    #  - source: node_exporter
-    #    target: /etc/node-exporter/docker-entrypoint.sh
-    # entrypoint: /etc/node-exporter/docker-entrypoint.sh
     command:
-    #  - '/bin/node_exporter'
       - '--path.sysfs=/host/sys'
       - '--path.procfs=/host/proc'
       - '--collector.textfile.directory=/etc/node-exporter/'
@@ -170,9 +165,6 @@ services:
     volumes:
       - prometheus:/prometheus
       - ./prometheus/conf:/etc/prometheus
-      #- source: prometheus_entrypoint
-      #  target: /etc/prometheus/docker-entrypoint.sh
-    # entrypoint: /etc/prometheus/docker-entrypoint.sh
     deploy:
       mode: replicated
       replicas: 3
