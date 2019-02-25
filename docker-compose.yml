@@ -34,7 +34,7 @@ services:
           memory: 64M
 
   grafana:
-    image: ale8193/grafana:latest
+    image: ale8193/grafana
     ports:
       - "3000:3000"
     networks:
@@ -63,7 +63,7 @@ services:
           memory: 64M
 
   alertmanager:
-    image: ale8193/alertmanager:latest
+    image: ale8193/alertmanager
     ports:
       - "9093:9093"
     networks:
@@ -128,7 +128,7 @@ services:
           memory: 64M
 
   node-exporter:
-    image: ale8193/node-exporter:latest
+    image: ale8193/node-exporter
     networks:
       - net
     environment:
@@ -137,7 +137,7 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
-    #  - /etc/hostname:/etc/nodename
+      - /etc/hostname:/etc/nodename
     command:
       - '--path.sysfs=/host/sys'
       - '--path.procfs=/host/proc'
@@ -153,7 +153,7 @@ services:
           memory: 64M
 
   prometheus:
-    image: ale8193/prometheus:latest
+    image: ale8193/prometheus
     ports:
      - "9090:9090"
     networks:

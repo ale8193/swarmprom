@@ -23,7 +23,6 @@ Prerequisites:
 
 * Docker CE 17.09.0-ce or Docker EE 17.06.2-ee-3
 * Swarm cluster with one manager and a worker node
-* Docker engine experimental enabled and metrics address set to `0.0.0.0:9323`
 
 Services:
 

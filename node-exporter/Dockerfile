@@ -6,5 +6,7 @@ USER root
 
 COPY conf /etc/node-exporter/
 
+RUN chmod a+x /etc/node-export/docker-entrypoint.sh
+
 ENTRYPOINT  [ "/etc/node-exporter/docker-entrypoint.sh" ]
 CMD [ "/bin/node_exporter" ]
