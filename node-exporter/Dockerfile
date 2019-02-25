@@ -4,7 +4,7 @@ ENV NODE_ID=none
 
 USER root
 
-COPY conf /etc/node-exporter/
+COPY ./conf/docker-entrypoint.sh /etc/node-exporter/
 
 RUN chmod a+x /etc/node-export/docker-entrypoint.sh
 
