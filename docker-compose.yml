@@ -10,6 +10,10 @@ volumes:
     grafana: {}
     alertmanager: {}
 
+configs:
+  grafana_datasource:
+    file: ./grafana/datasources/prometheus.yaml
+
 services:
   cadvisor:
     image: google/cadvisor
@@ -45,11 +49,11 @@ services:
       - GF_SECURITY_ADMIN_USER=${ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - GF_USERS_ALLOW_SIGN_UP=false
+    configs:
+      - source: grafana_datasource
+        target: /etc/grafana/provisioning/datasources/prometheus.yaml
     volumes:
       - grafana:/var/lib/grafana
-#      - ./grafana/dashboards:/etc/grafana/dashboards
-#      - ./grafana/datasources:/etc/grafana/provisioning/datasources
-#      - ./grafana/swarmprom_dashboards.yml:/etc/grafana/provisioning/dashboards/swarmprom_dashboards.yml
     deploy:
       mode: replicated
       replicas: 3
