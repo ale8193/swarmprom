@@ -3,5 +3,6 @@ FROM prom/prometheus:latest
 
 COPY conf /etc/prometheus/
 
-CMD        [ "--config.file=/etc/prometheus/prometheus.yml", \
+ENTRYPOINT ["/etc/prometheus/conf/docker-entrypoint.sh"]
+CMD        [ "--config.file=/etc/prometheus/conf/prometheus.yml", \
              "--storage.tsdb.path=/prometheus" ]
